@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Resume Analyzer</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='result.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="topbar">
+        <h1>🤖 AI Resume Analyzer</h1>
+
+        <button onclick="window.location.href='/'">
+            Analyze Another Resume
+        </button>
+    </div>
+
+    <div class="hero">
+        <h2>Resume Analysis Report</h2>
+        <p>Your resume has been successfully analyzed using Python.</p>
+    </div>
+
+    <div class="dashboard">
+
+        <div class="card">
+            <h3>👤 Name</h3>
+            <h2>{{ name }}</h2>
+        </div>
+
+        <div class="card">
+            <h3>📧 Email</h3>
+            <p>{{ email }}</p>
+        </div>
+
+        <div class="card">
+            <h3>📞 Phone</h3>
+            <p>{{ phone }}</p>
+        </div>
+
+        <div class="card score-card">
+
+            <h3>⭐ ATS Score</h3>
+
+            <div class="score-container">
+
+                <svg class="progress-ring" width="220" height="220">
+
+                    <defs>
+                        <linearGradient id="gradientColor">
+                            <stop offset="0%" stop-color="#00f5ff"/>
+                            <stop offset="100%" stop-color="#8a2be2"/>
+                        </linearGradient>
+                    </defs>
+
+                    <circle class="progress-bg"
+                            cx="110"
+                            cy="110"
+                            r="90">
+                    </circle>
+
+                    <circle class="progress-bar"
+                            cx="110"
+                            cy="110"
+                            r="90">
+                    </circle>
+
+                </svg>
+
+                <div class="score-content">
+                    <h1 id="scoreValue">0%</h1>
+                    <p>ATS MATCH</p>
+                    <span id="scoreStatus"></span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Skills Section -->
+
+    <div class="row">
+
+        <div class="left">
+
+            <h2>✅ Skills Found</h2>
+
+            <div class="skills">
+
+                {% for skill in found_skills %}
+                    <span>{{ skill }}</span>
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+        <div class="right">
+
+            <h2>❌ Missing Skills</h2>
+
+            <div class="skills">
+
+                {% for skill in missing_skills %}
+                    <span class="missing">{{ skill }}</span>
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Suggestions + Strengths -->
+
+    <div class="row">
+
+        <div class="left">
+
+            <h2>💡 Suggestions</h2>
+
+            <ul>
+
+                {% for item in suggestions %}
+                    <li>{{ item }}</li>
+                {% endfor %}
+
+            </ul>
+
+        </div>
+
+        <div class="right">
+
+            <h2>💪 Resume Strengths</h2>
+
+            <ul>
+
+                {% for item in strengths %}
+                    <li>{{ item }}</li>
+                {% endfor %}
+
+            </ul>
+
+        </div>
+
+    </div>
+
+    <!-- Resume Preview -->
+
+    <div class="resume">
+
+        <h2>📄 Resume Preview</h2>
+
+        <pre>{{ text }}</pre>
+
+    </div>
+
+</div>
+
+<script>
+
+const score = {{ ats_score }};
+
+const circle = document.querySelector(".progress-bar");
+
+const radius = 90;
+const circumference = 2 * Math.PI * radius;
+
+circle.style.strokeDasharray = circumference;
+circle.style.strokeDashoffset = circumference;
+
+const offset =
+circumference - (score / 100) * circumference;
+
+setTimeout(() => {
+    circle.style.strokeDashoffset = offset;
+}, 300);
+
+let current = 0;
+
+const counter = setInterval(() => {
+
+    document.getElementById("scoreValue").innerText =
+        current + "%";
+
+    current++;
+
+    if(current > score){
+
+        clearInterval(counter);
+
+        const status =
+        document.getElementById("scoreStatus");
+
+        if(score >= 85){
+            status.innerText = "Excellent Resume 🚀";
+        }
+        else if(score >= 70){
+            status.innerText = "Good Resume 👍";
+        }
+        else{
+            status.innerText = "Needs Improvement ⚠️";
+        }
+    }
+
+},20);
+
+</script>
+
+</body>
+</html>
